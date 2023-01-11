@@ -33,14 +33,21 @@ end
         end
     end
     transform = CartesianFromFractional(cell.lattice)
-    for (atom, position) in zip(cell.atoms, cell.positions)
-        position = transform(position)
-        @series begin
-            seriestype --> :scatter3d
-            markerstrokecolor --> :auto
-            markerstrokewidth --> 0
-            label --> string(atom)
-            Tuple(Base.vect(coordinate) for coordinate in position)
+    # Only show one label for each unique element
+    types = unique(string.(cell.atoms))
+    for type in types
+        count = 0
+        indices = findall(atom -> string(atom) == type, cell.atoms)
+        for position in cell.positions[indices]
+            position = transform(position)
+            @series begin
+                seriestype --> :scatter3d
+                markerstrokecolor --> :auto
+                markerstrokewidth --> 0
+                label := count >= 1 ? "" : type
+                Tuple(Base.vect(coordinate) for coordinate in position)
+            end
+            count += 1
         end
     end
 end
