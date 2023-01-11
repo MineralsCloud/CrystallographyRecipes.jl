@@ -2,7 +2,7 @@ module CrystallographyRecipes
 
 using CrystallographyBase: Lattice, Cell, CartesianFromFractional, latticevectors
 
-export vertices, edge, edges
+export vertices, edge, edges, atomtypes
 
 function vertices(lattice::Lattice)
     O = zeros(eltype(lattice), 3)
@@ -30,6 +30,8 @@ function edges(lattice::Lattice)
         edge(BC, ABC),
     ]
 end
+
+atomtypes(cell::Cell) = unique(cell.atoms)
 
 include("recipes.jl")
 
