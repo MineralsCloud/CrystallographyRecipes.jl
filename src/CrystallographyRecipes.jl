@@ -1,6 +1,6 @@
 module CrystallographyRecipes
 
-using CrystallographyBase: Lattice, latticevectors
+using CrystallographyBase: Lattice, Cell, CartesianFromFractional, latticevectors
 
 export vertices, edge, edges
 
