@@ -73,7 +73,7 @@ version = "0.7.0"
 
 [[deps.CrystallographyRecipes]]
 deps = ["CrystallographyBase", "RecipesBase"]
-git-tree-sha1 = "ce6d001d61ce9accbd60ad783270eaf977ef0b29"
+git-tree-sha1 = "af81a584e344185d5dab6e0be169407bd45c77f9"
 repo-rev = "main"
 repo-url = "https://github.com/MineralsCloud/CrystallographyRecipes.jl"
 uuid = "6d201c90-cd51-4bcb-ba42-504028e2f5e7"
