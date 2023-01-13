@@ -1,3 +1,4 @@
+using CrystallographyBase: Lattice, Cell, CartesianFromFractional
 using RecipesBase: @recipe, @series
 
 @recipe function plot(lattice::Lattice)
