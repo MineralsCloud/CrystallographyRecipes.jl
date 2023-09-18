@@ -32,15 +32,14 @@ end
         coordinates = map(eachatom(group)) do (_, position)
             lattice * position  # Cartesian coordinates
         end
+        seriestype --> :scatter3d
+        markersize --> 5
+        markerstrokecolor --> :auto
+        markerstrokewidth --> 0
+        label --> string(group.atom)
+        XYZ = reduce(hcat, coordinates)
         @series begin
-            seriestype --> :scatter3d
-            markersize --> 5
-            markerstrokecolor --> :auto
-            markerstrokewidth --> 0
-            label --> string(group.atom)
-            map(Base.Fix2(getindex, 1), coordinates),
-            map(Base.Fix2(getindex, 2), coordinates),
-            map(Base.Fix2(getindex, 3), coordinates)
+            XYZ[1, :], XYZ[2, :], XYZ[3, :]
         end
     end
 end
