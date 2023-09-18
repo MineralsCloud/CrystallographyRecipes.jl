@@ -17,13 +17,21 @@ using RecipesBase: @recipe, @series
     end
 end
 
-@recipe function plot(cell::AbstractCell; atomsconnected=false)
+@recipe function plot(
+    cell::AbstractCell;
+    atomsconnected=false,
+    edgewidth=1,
+    bondwidth=2,
+    bondcolor=:gray,
+    atomsize=5,
+)
     xguide --> raw"$x$"
     yguide --> raw"$y$"
     zguide --> raw"$z$"
     aspect_ratio --> :equal  # See https://docs.juliaplots.org/latest/gallery/gr/generated/gr-ref060/
     lattice = Lattice(cell)
     @series begin
+        linewidth := edgewidth
         lattice
     end
     if atomsconnected
@@ -36,8 +44,9 @@ end
                             cpositionᵢₖ = lattice * positionᵢₖ  # Cartesian coordinates, do not use the same variable name as the loop variable!
                             cpositionⱼₗ = lattice * positionⱼₗ  # Cartesian coordinates, do not use the same variable name as the loop variable!
                             @series begin
-                                seriestype --> :path3d
-                                linewidth --> 2
+                                seriestype := :path3d
+                                linewidth := bondwidth
+                                color --> bondcolor
                                 label := ""
                                 Tuple(map(collect, zip(cpositionᵢₖ, cpositionⱼₗ)))
                             end
@@ -53,10 +62,10 @@ end
             lattice * position  # Cartesian coordinates
         end
         seriestype --> :scatter3d
-        markersize --> 5
+        markersize := atomsize
         markerstrokecolor --> :auto
         markerstrokewidth --> 0
-        label --> string(group.atom)
+        label := string(group.atom)
         XYZ = reduce(hcat, coordinates)
         @series begin
             XYZ[1, :], XYZ[2, :], XYZ[3, :]
