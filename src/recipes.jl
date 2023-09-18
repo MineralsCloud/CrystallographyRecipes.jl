@@ -1,5 +1,4 @@
-using Crystallography: findsymmetry
-using CrystallographyBase: Lattice, Cell, edges, atomtypes
+using Crystallography: AbstractCell, Lattice, edges, atomtypes, eachatom, supercell
 using RecipesBase: @recipe, @series
 
 @recipe function plot(lattice::Lattice)
@@ -18,7 +17,7 @@ using RecipesBase: @recipe, @series
     end
 end
 
-@recipe function plot(cell::Cell)
+@recipe function plot(cell::AbstractCell)
     xguide --> raw"$x$"
     yguide --> raw"$y$"
     zguide --> raw"$z$"
