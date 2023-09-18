@@ -30,16 +30,13 @@ end
     end
     # Only show one label for each unique element
     types = string.(atomtypes(cell))
-    symops = findsymmetry(cell)
     for type in types  # For each unique element
-        indices = findall(atom -> string(atom) == type, cell.atoms)
-        coordinates = Iterators.flatten(
-            map(cell.positions[indices]) do position  # For each atom of that element
-                map(symops) do symop  # Find equivalent positions for each atom
-                    lattice * symop(position)  # Cartesian coordinates
-                end
-            end,
-        )
+        coordinates = Vector[]
+        for (atom, position) in eachatom(cell)
+            if string(atom) == type  # For each atom of that element
+                push!(coordinates, lattice * position)  # Cartesian coordinates
+            end
+        end
         @series begin
             seriestype --> :scatter3d
             markerstrokecolor --> :auto
