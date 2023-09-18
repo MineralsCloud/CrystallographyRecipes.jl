@@ -4,12 +4,12 @@ using RecipesBase: @recipe, @series
 @recipe function plot(lattice::Lattice)
     seriestype --> :path3d
     linewidth --> 1
+    color --> :black
     xguide --> raw"$x$"
     yguide --> raw"$y$"
     zguide --> raw"$z$"
-    color --> :black
     aspect_ratio --> :equal  # See https://docs.juliaplots.org/latest/gallery/gr/generated/gr-ref060/
-    label --> :none
+    label := ""
     for edge in edges(lattice)
         @series begin
             edge[:, 1], edge[:, 2], edge[:, 3]
