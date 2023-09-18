@@ -1,4 +1,5 @@
-using CrystallographyBase: Lattice, Cell, CartesianFromFractional, edges
+using Crystallography: findsymmetry
+using CrystallographyBase: Lattice, Cell, edges, atomtypes
 using RecipesBase: @recipe, @series
 
 @recipe function plot(lattice::Lattice)
@@ -26,22 +27,26 @@ end
         label --> :none
         lattice
     end
-    transform = CartesianFromFractional(cell.lattice)
     # Only show one label for each unique element
-    types = unique(string.(cell.atoms))
-    for type in types
-        count = 0
+    types = string.(atomtypes(cell))
+    symops = findsymmetry(cell)
+    for type in types  # For each unique element
         indices = findall(atom -> string(atom) == type, cell.atoms)
-        for position in cell.positions[indices]
-            position = transform(position)
-            @series begin
-                seriestype --> :scatter3d
-                markerstrokecolor --> :auto
-                markerstrokewidth --> 0
-                label := count >= 1 ? "" : type
-                Tuple(Base.vect(coordinate) for coordinate in position)
-            end
-            count += 1
+        coordinates = Iterators.flatten(
+            map(cell.positions[indices]) do position  # For each atom of that element
+                map(symops) do symop  # Find equivalent positions for each atom
+                    lattice * symop(position)  # Cartesian coordinates
+                end
+            end,
+        )
+        @series begin
+            seriestype --> :scatter3d
+            markerstrokecolor --> :auto
+            markerstrokewidth --> 0
+            label := type
+            map(Base.Fix2(getindex, 1), coordinates),
+            map(Base.Fix2(getindex, 2), coordinates),
+            map(Base.Fix2(getindex, 3), coordinates)
         end
     end
 end
