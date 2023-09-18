@@ -1,7 +1,7 @@
 using Crystallography: AbstractCell, Lattice, edges, atomtypes, eachatom, eachatomgroup
 using RecipesBase: @recipe, @series
 
-@recipe function plot(lattice::Lattice)
+@recipe function plot(lattice::Lattice; origin=zeros(eltype(lattice), 3))
     seriestype --> :path3d
     linewidth --> 1
     color --> :black
@@ -10,7 +10,7 @@ using RecipesBase: @recipe, @series
     zguide --> raw"$z$"
     aspect_ratio --> :equal  # See https://docs.juliaplots.org/latest/gallery/gr/generated/gr-ref060/
     label := ""
-    for edge in edges(lattice)
+    for edge in edges(lattice, origin)
         @series begin
             edge[:, 1], edge[:, 2], edge[:, 3]
         end
@@ -19,6 +19,7 @@ end
 
 @recipe function plot(
     cell::AbstractCell;
+    origin=zeros(eltype(Lattice(cell)), 3),
     atomsconnected=false,
     edgewidth=1,
     bondwidth=2,
@@ -31,6 +32,7 @@ end
     aspect_ratio --> :equal  # See https://docs.juliaplots.org/latest/gallery/gr/generated/gr-ref060/
     lattice = Lattice(cell)
     @series begin
+        origin := origin
         linewidth := edgewidth
         lattice
     end
