@@ -25,13 +25,10 @@ end
     tick_direction --> :out
     aspect_ratio --> :equal  # See https://docs.juliaplots.org/latest/gallery/gr/generated/gr-ref060/
     frame --> :box
-    for edge in edges(cell.lattice)
-        @series begin
-            seriestype --> :path3d
-            color --> :grey
-            label --> :none
-            edge[:, 1], edge[:, 2], edge[:, 3]
-        end
+    lattice = Lattice(cell)
+    @series begin
+        label --> :none
+        lattice
     end
     transform = CartesianFromFractional(cell.lattice)
     # Only show one label for each unique element
