@@ -1,4 +1,5 @@
-using Crystallography: AbstractCell, Lattice, edges, atomtypes, eachatom, supercell
+using Crystallography:
+    AbstractCell, Lattice, edges, atomtypes, eachatom, eachatomgroup, supercell
 using RecipesBase: @recipe, @series
 
 @recipe function plot(lattice::Lattice)
@@ -27,20 +28,16 @@ end
         lattice
     end
     # Only show one label for each unique element
-    types = string.(atomtypes(cell))
-    for type in types  # For each unique element
-        coordinates = Vector[]
-        for (atom, position) in eachatom(cell)
-            if string(atom) == type  # For each atom of that element
-                push!(coordinates, lattice * position)  # Cartesian coordinates
-            end
+    for group in eachatomgroup(cell)
+        coordinates = map(eachatom(group)) do (_, position)
+            lattice * position  # Cartesian coordinates
         end
         @series begin
             seriestype --> :scatter3d
             markersize --> 5
             markerstrokecolor --> :auto
             markerstrokewidth --> 0
-            label := type
+            label --> string(group.atom)
             map(Base.Fix2(getindex, 1), coordinates),
             map(Base.Fix2(getindex, 2), coordinates),
             map(Base.Fix2(getindex, 3), coordinates)
