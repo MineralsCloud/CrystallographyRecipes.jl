@@ -25,7 +25,6 @@ end
     aspect_ratio --> :equal  # See https://docs.juliaplots.org/latest/gallery/gr/generated/gr-ref060/
     lattice = Lattice(cell)
     @series begin
-        label --> :none
         lattice
     end
     # Only show one label for each unique element
@@ -39,6 +38,7 @@ end
         end
         @series begin
             seriestype --> :scatter3d
+            markersize --> 5
             markerstrokecolor --> :auto
             markerstrokewidth --> 0
             label := type
