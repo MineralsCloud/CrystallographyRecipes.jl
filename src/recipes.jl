@@ -18,7 +18,7 @@ using RecipesBase: @recipe, @series
     end
 end
 
-@recipe function plot(cell::AbstractCell)
+@recipe function plot(cell::AbstractCell; atomsconnected=false)
     xguide --> raw"$x$"
     yguide --> raw"$y$"
     zguide --> raw"$z$"
@@ -26,6 +26,27 @@ end
     lattice = Lattice(cell)
     @series begin
         lattice
+    end
+    if atomsconnected
+        allgroups = eachatomgroup(cell)
+        for (i, groupᵢ) in enumerate(allgroups)
+            for (j, groupⱼ) in enumerate(allgroups)
+                if j > i
+                    for (_, positionᵢₖ) in eachatom(groupᵢ)
+                        for (_, positionⱼₗ) in eachatom(groupⱼ)
+                            cpositionᵢₖ = lattice * positionᵢₖ  # Cartesian coordinates, do not use the same variable name as the loop variable!
+                            cpositionⱼₗ = lattice * positionⱼₗ  # Cartesian coordinates, do not use the same variable name as the loop variable!
+                            @series begin
+                                seriestype --> :path3d
+                                linewidth --> 2
+                                label := ""
+                                Tuple(map(collect, zip(cpositionᵢₖ, cpositionⱼₗ)))
+                            end
+                        end
+                    end
+                end
+            end
+        end
     end
     # Only show one label for each unique element
     for group in eachatomgroup(cell)
