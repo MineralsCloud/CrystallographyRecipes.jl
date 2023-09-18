@@ -1,5 +1,4 @@
-using Crystallography:
-    AbstractCell, Lattice, edges, atomtypes, eachatom, eachatomgroup, supercell
+using Crystallography: AbstractCell, Lattice, edges, atomtypes, eachatom, eachatomgroup
 using RecipesBase: @recipe, @series
 
 @recipe function plot(lattice::Lattice)
