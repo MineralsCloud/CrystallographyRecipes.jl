@@ -74,3 +74,25 @@ end
         end
     end
 end
+
+@recipe function f(dispersion::DispersionRelation)
+    points = interpolate(dispersion.paths)
+    seriestype --> :path
+    linewidth --> 1
+    xguide --> ""
+    yguide --> raw"energy"
+    for band in bands
+        @series begin
+            reduce(hcat, band)
+        end
+    end
+    for node in dispersion.path.nodes
+        @series begin
+            seriestype --> :vline
+            seriescolor := :black  # Fix the axis color
+            linewidth := 1  # This is an axis, don't change its width
+            z_order --> :back
+            label := ""
+        end
+    end
+end
