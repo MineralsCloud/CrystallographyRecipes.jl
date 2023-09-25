@@ -75,24 +75,31 @@ end
     end
 end
 
-@recipe function f(dispersion::DispersionRelation)
-    points = interpolate(dispersion.paths)
-    seriestype --> :path
-    linewidth --> 1
-    xguide --> ""
+@userplot DispersionRelationsPlot
+@recipe function f(plot::DispersionRelationsPlot; specialpoints=[])
+    xguide --> "k"
     yguide --> raw"energy"
-    for band in bands
+    dispersions, recip_lattice = plot.args
+    paths = collect(dispersion.path for dispersion in dispersions)
+    bands = reduce(vcat, (dispersion.bands for dispersion in dispersions))
+    𝐋 = accumulate(+, normalize_lengths(paths, recip_lattice))
+    xticks --> (𝐋, string.(specialpoints))
+    for band in eachcol(bands)
         @series begin
-            reduce(hcat, band)
+            seriestype --> :path
+            linewidth --> 1
+            label --> ""
+            eachindex(band) ./ length(band), band
         end
     end
-    for node in dispersion.path.nodes
+    for L in 𝐋
         @series begin
             seriestype --> :vline
             seriescolor := :black  # Fix the axis color
             linewidth := 1  # This is an axis, don't change its width
             z_order --> :back
             label := ""
+            [L]
         end
     end
 end
