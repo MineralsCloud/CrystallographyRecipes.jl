@@ -10,6 +10,8 @@ using Crystallography:
     normalize_lengths
 using RecipesBase: @recipe, @userplot, @series
 
+export bandstructureplot, bandstructureplot!, phononspectrumplot, phononspectrumplot!
+
 @recipe function plot(lattice::Lattice; origin=zeros(eltype(lattice), 3))
     seriestype --> :path3d
     linewidth --> 1
@@ -128,3 +130,7 @@ end
         end
     end
 end
+const bandstructureplot = dispersionrelationsplot
+const bandstructureplot! = dispersionrelationsplot!
+const phononspectrumplot = dispersionrelationsplot
+const phononspectrumplot! = dispersionrelationsplot!
