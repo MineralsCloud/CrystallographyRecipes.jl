@@ -1,5 +1,14 @@
-using Crystallography: AbstractCell, Lattice, edges, atomtypes, eachatom, eachatomgroup
-using RecipesBase: @recipe, @series
+using Crystallography:
+    AbstractCell,
+    Lattice,
+    ShiftedLattice,
+    DispersionRelation,
+    edges,
+    atomtypes,
+    eachatom,
+    eachatomgroup,
+    normalize_lengths
+using RecipesBase: @recipe, @userplot, @series
 
 @recipe function plot(lattice::Lattice; origin=zeros(eltype(lattice), 3))
     seriestype --> :path3d
