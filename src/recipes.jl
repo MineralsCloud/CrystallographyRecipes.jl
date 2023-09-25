@@ -76,13 +76,13 @@ end
 end
 
 @userplot DispersionRelationsPlot
-@recipe function f(plot::DispersionRelationsPlot; specialpoints=[])
+@recipe function f(plot::DispersionRelationsPlot; specialpoints=[], split=[])
     xguide --> "k"
-    yguide --> raw"energy"
     dispersions, recip_lattice = plot.args
     paths = collect(dispersion.path for dispersion in dispersions)
     bands = reduce(vcat, (dispersion.bands for dispersion in dispersions))
     𝐋 = accumulate(+, normalize_lengths(paths, recip_lattice))
+    xlims --> extrema(𝐋)
     xticks --> (𝐋, string.(specialpoints))
     for band in eachcol(bands)
         @series begin
@@ -92,14 +92,16 @@ end
             eachindex(band) ./ length(band), band
         end
     end
-    for L in 𝐋
-        @series begin
-            seriestype --> :vline
-            seriescolor := :black  # Fix the axis color
-            linewidth := 1  # This is an axis, don't change its width
-            z_order --> :back
-            label := ""
-            [L]
+    for (i, L) in enumerate(𝐋)
+        if i in split
+            @series begin
+                seriestype --> :vline
+                seriescolor := :black  # Fix the axis color
+                linewidth := 1  # This is an axis, don't change its width
+                z_order --> :back
+                label := ""
+                [L]
+            end
         end
     end
 end
