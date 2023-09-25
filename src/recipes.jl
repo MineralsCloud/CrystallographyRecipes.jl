@@ -100,8 +100,8 @@ end
     end
 end
 
-@userplot DispersionPlot
-@recipe function f(plot::DispersionPlot; specialpoints=[], split=[])
+@userplot BandsPlot
+@recipe function f(plot::BandsPlot; specialpoints=[], split=[])
     xguide --> "k"
     dispersions, recip_lattice = plot.args
     paths = collect(dispersion.path for dispersion in dispersions)
