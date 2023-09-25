@@ -99,7 +99,7 @@ end
 end
 
 @userplot BandsPlot
-@recipe function f(plot::BandsPlot; specialpoints=[], split=[])
+@recipe function f(plot::BandsPlot; specialpoints=[[]])
     if specialpoints isa AbstractVector{<:AbstractVector}
         throw(ArgumentError("`specialpoints` must be a vector of vectors!"))
     end
@@ -107,9 +107,10 @@ end
     dispersions, recip_lattice = plot.args
     paths = collect(dispersion.path for dispersion in dispersions)
     bands = reduce(vcat, (dispersion.bands for dispersion in dispersions))
-    𝐋 = cumsum(normalize_lengths(paths, recip_lattice))
-    xlims --> extrema(𝐋)
-    xticks --> (𝐋, string.(specialpoints))
+    xticks = cumsum(normalize_lengths(paths, recip_lattice))
+    xticklabels --> string.(Iterators.flatten(specialpoints))
+    xlims --> extrema(xticks)
+    xticks --> (xticks, xticklabels)
     for band in eachcol(bands)
         @series begin
             seriestype --> :path
@@ -118,7 +119,8 @@ end
             eachindex(band) ./ length(band), band
         end
     end
-    for (i, L) in enumerate(𝐋)
+    split = cumsum(length.(specialpoints))[begin:(end - 1)]  # Do not include the last point
+    for (i, xtick) in enumerate(xticks)
         if i in split
             @series begin
                 seriestype --> :vline
@@ -126,7 +128,7 @@ end
                 linewidth := 1  # This is an axis, don't change its width
                 z_order --> :back
                 label := ""
-                [L]
+                [xtick]
             end
         end
     end
