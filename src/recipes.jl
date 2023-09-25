@@ -100,6 +100,9 @@ end
 
 @userplot BandsPlot
 @recipe function f(plot::BandsPlot; specialpoints=[], split=[])
+    if specialpoints isa AbstractVector{<:AbstractVector}
+        throw(ArgumentError("`specialpoints` must be a vector of vectors!"))
+    end
     xguide --> "k"
     dispersions, recip_lattice = plot.args
     paths = collect(dispersion.path for dispersion in dispersions)
