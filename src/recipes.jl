@@ -100,8 +100,8 @@ end
     end
 end
 
-@userplot DispersionRelationsPlot
-@recipe function f(plot::DispersionRelationsPlot; specialpoints=[], split=[])
+@userplot DispersionPlot
+@recipe function f(plot::DispersionPlot; specialpoints=[], split=[])
     xguide --> "k"
     dispersions, recip_lattice = plot.args
     paths = collect(dispersion.path for dispersion in dispersions)
@@ -130,10 +130,10 @@ end
         end
     end
 end
-const bandstructureplot = dispersionrelationsplot
-const bandstructureplot! = dispersionrelationsplot!
-const phononspectrumplot = dispersionrelationsplot
-const phononspectrumplot! = dispersionrelationsplot!
+const bandstructureplot = dispersionplot
+const bandstructureplot! = dispersionplot!
+const phononspectrumplot = dispersionplot
+const phononspectrumplot! = dispersionplot!
 
 @userplot DOSPlot
 @recipe function f(plot::DOSPlot)
