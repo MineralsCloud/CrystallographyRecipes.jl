@@ -103,14 +103,14 @@ end
     if specialpoints isa AbstractVector{<:AbstractVector}
         throw(ArgumentError("`specialpoints` must be a vector of vectors!"))
     end
-    xguide --> "k"
     dispersions, recip_lattice = plot.args
     paths = collect(dispersion.path for dispersion in dispersions)
     bands = reduce(vcat, (dispersion.bands for dispersion in dispersions))
     xticks = cumsum(normalize_lengths(paths, recip_lattice))
-    xticklabels --> string.(Iterators.flatten(specialpoints))
-    xlims --> extrema(xticks)
+    xticklabels = string.(Iterators.flatten(specialpoints))
     xticks --> (xticks, xticklabels)
+    xlims --> extrema(xticks)
+    xguide --> "k"
     for band in eachcol(bands)
         @series begin
             seriestype --> :path
