@@ -136,11 +136,15 @@ const phononspectrumplot = dispersionplot
 const phononspectrumplot! = dispersionplot!
 
 @userplot DOSPlot
-@recipe function f(plot::DOSPlot)
+@recipe function f(plot::DOSPlot; vertical=false)
+    energies, dos = plot.args
+    I = sortperm(energies)  # Remember to sort!
     yguide --> "DOS"
     seriestype --> :path
-    energies, dos = plot.args
     xlims --> extrema(energies)
-    I = sortperm(energies)  # Remember to sort!
+    ylims --> extrema(dos)
+    if vertical
+        permute --> (:x, :y)  # See https://discourse.julialang.org/t/is-there-a-simple-way-to-swap-the-x-and-y-axes-in-plots-jl-after-a-figure-is-plotted/103599/5
+    end
     return energies[I], dos[I]
 end
