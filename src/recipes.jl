@@ -134,3 +134,13 @@ const bandstructureplot = dispersionrelationsplot
 const bandstructureplot! = dispersionrelationsplot!
 const phononspectrumplot = dispersionrelationsplot
 const phononspectrumplot! = dispersionrelationsplot!
+
+@userplot DOSPlot
+@recipe function f(plot::DOSPlot)
+    yguide --> "DOS"
+    seriestype --> :path
+    energies, dos = plot.args
+    xlims --> extrema(energies)
+    I = sortperm(energies)  # Remember to sort!
+    return energies[I], dos[I]
+end
