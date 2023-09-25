@@ -104,7 +104,7 @@ end
     dispersions, recip_lattice = plot.args
     paths = collect(dispersion.path for dispersion in dispersions)
     bands = reduce(vcat, (dispersion.bands for dispersion in dispersions))
-    𝐋 = accumulate(+, normalize_lengths(paths, recip_lattice))
+    𝐋 = cumsum(normalize_lengths(paths, recip_lattice))
     xlims --> extrema(𝐋)
     xticks --> (𝐋, string.(specialpoints))
     for band in eachcol(bands)
