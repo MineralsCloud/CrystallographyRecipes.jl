@@ -16,7 +16,21 @@ using RecipesBase: @recipe, @series
         end
     end
 end
-
+@recipe function plot(lattice::ShiftedLattice)
+    seriestype --> :path3d
+    linewidth --> 1
+    color --> :black
+    xguide --> raw"$x$"
+    yguide --> raw"$y$"
+    zguide --> raw"$z$"
+    aspect_ratio --> :equal  # See https://docs.juliaplots.org/latest/gallery/gr/generated/gr-ref060/
+    label := ""
+    for edge in edges(Lattice(lattice.original .+ lattice.by), lattice.by)
+        @series begin
+            edge[:, 1], edge[:, 2], edge[:, 3]
+        end
+    end
+end
 @recipe function plot(
     cell::AbstractCell;
     origin=zeros(eltype(Lattice(cell)), 3),
