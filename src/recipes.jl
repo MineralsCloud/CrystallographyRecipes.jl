@@ -122,13 +122,19 @@ end
     end
     split = cumsum(length.(specialpoints))[begin:(end - 1)]  # Do not include the last point
     for (i, xtick) in enumerate(xticks)
+        seriestype --> :vline
+        seriescolor := :black  # Fix the axis color
+        linewidth := 1  # This is an axis, don't change its width
+        z_order --> :back
+        label := ""
         if i in split
             @series begin
-                seriestype --> :vline
-                seriescolor := :black  # Fix the axis color
-                linewidth := 1  # This is an axis, don't change its width
-                z_order --> :back
-                label := ""
+                linestyle --> :solid
+                [xtick]
+            end
+        else
+            @series begin
+                linestyle --> :dot
                 [xtick]
             end
         end
