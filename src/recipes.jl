@@ -100,13 +100,14 @@ end
 
 @userplot BandsPlot
 @recipe function f(plot::BandsPlot; specialpoints=[[]])
-    if specialpoints isa AbstractVector{<:AbstractVector}
+    if !(eltype(specialpoints) <: AbstractVector)
         throw(ArgumentError("`specialpoints` must be a vector of vectors!"))
     end
     dispersions, recip_lattice = plot.args
     paths = collect(dispersion.path for dispersion in dispersions)
     bands = reduce(vcat, (dispersion.bands for dispersion in dispersions))
     xticks = cumsum(normalize_lengths(paths, recip_lattice))
+    prepend!(xticks, zero(eltype(xticks)))  # Don't forget the initial point!
     xticklabels = string.(Iterators.flatten(specialpoints))
     xticks --> (xticks, xticklabels)
     xlims --> extrema(xticks)
