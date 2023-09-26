@@ -108,7 +108,7 @@ end
     bands = reduce(vcat, (dispersion.bands for dispersion in dispersions))
     xticks = cumsum(normalize_lengths(paths, recip_lattice))
     prepend!(xticks, zero(eltype(xticks)))  # Don't forget the initial point!
-    xticklabels = string.(Iterators.flatten(specialpoints))
+    xticklabels = _makexticklabels(specialpoints)
     xticks --> (xticks, xticklabels)
     xlims --> extrema(xticks)
     xguide --> "k"
@@ -133,6 +133,35 @@ end
             end
         end
     end
+end
+
+function _makexticklabels(specialpoints)
+    return collect(
+        Iterators.flatten(
+            map(firstindex(specialpoints):lastindex(specialpoints)) do i
+                points = specialpoints[i]
+                labels = String[]
+                for (j, point) in enumerate(points)
+                    if j == firstindex(points)
+                        if i == firstindex(specialpoints)
+                            push!(labels, string(point))
+                        else
+                            continue
+                        end
+                    elseif j == lastindex(points)
+                        if i == lastindex(specialpoints)
+                            push!(labels, string(point))
+                        else
+                            push!(labels, string(point, '|', specialpoints[i + 1][begin]))
+                        end
+                    else
+                        push!(labels, string(point))
+                    end
+                end
+                labels
+            end,
+        ),
+    )
 end
 
 @userplot DOSPlot
