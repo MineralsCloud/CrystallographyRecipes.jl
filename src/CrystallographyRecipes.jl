@@ -30,7 +30,6 @@ using RecipesBase: @recipe, @userplot, @series
 end
 @recipe function plot(
     cell::AbstractCell;
-    origin=zeros(eltype(Lattice(cell)), 3),
     atomsconnected=false,
     edgewidth=1,
     bondwidth=2,
@@ -41,9 +40,8 @@ end
     yguide --> raw"$y$"
     zguide --> raw"$z$"
     aspect_ratio --> :equal  # See https://docs.juliaplots.org/latest/gallery/gr/generated/gr-ref060/
-    lattice = Lattice(cell)
+    lattice = cell.lattice
     @series begin
-        origin := origin
         linewidth := edgewidth
         lattice
     end
@@ -54,8 +52,8 @@ end
                 if j > i
                     for (_, positionᵢₖ) in eachatom(groupᵢ)
                         for (_, positionⱼₗ) in eachatom(groupⱼ)
-                            cpositionᵢₖ = lattice * positionᵢₖ  # Cartesian coordinates, do not use the same variable name as the loop variable!
-                            cpositionⱼₗ = lattice * positionⱼₗ  # Cartesian coordinates, do not use the same variable name as the loop variable!
+                            cpositionᵢₖ = lattice(positionᵢₖ)  # Cartesian coordinates, do not use the same variable name as the loop variable!
+                            cpositionⱼₗ = lattice(positionⱼₗ)  # Cartesian coordinates, do not use the same variable name as the loop variable!
                             @series begin
                                 seriestype := :path3d
                                 linewidth := bondwidth
@@ -72,7 +70,7 @@ end
     # Only show one label for each unique element
     for group in eachatomgroup(cell)
         coordinates = map(eachatom(group)) do (_, position)
-            lattice * position  # Cartesian coordinates
+            lattice(position)  # Cartesian coordinates
         end
         seriestype --> :scatter3d
         markersize := atomsize
