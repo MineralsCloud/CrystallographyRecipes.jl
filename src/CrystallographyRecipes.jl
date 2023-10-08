@@ -1,5 +1,6 @@
 module CrystallographyRecipes
 
+using CrystallographyBase: AbstractLattice
 using Crystallography:
     AbstractCell,
     Lattice,
@@ -12,7 +13,7 @@ using Crystallography:
     normalize_lengths
 using RecipesBase: @recipe, @userplot, @series
 
-@recipe function plot(lattice::Lattice; origin=zeros(eltype(lattice), 3))
+@recipe function plot(lattice::AbstractLattice)
     seriestype --> :path3d
     linewidth --> 1
     color --> :black
@@ -21,22 +22,7 @@ using RecipesBase: @recipe, @userplot, @series
     zguide --> raw"$z$"
     aspect_ratio --> :equal  # See https://docs.juliaplots.org/latest/gallery/gr/generated/gr-ref060/
     label := ""
-    for edge in edges(lattice, origin)
-        @series begin
-            edge[:, 1], edge[:, 2], edge[:, 3]
-        end
-    end
-end
-@recipe function plot(lattice::ShiftedLattice)
-    seriestype --> :path3d
-    linewidth --> 1
-    color --> :black
-    xguide --> raw"$x$"
-    yguide --> raw"$y$"
-    zguide --> raw"$z$"
-    aspect_ratio --> :equal  # See https://docs.juliaplots.org/latest/gallery/gr/generated/gr-ref060/
-    label := ""
-    for edge in edges(Lattice(lattice.original .+ lattice.by), lattice.by)
+    for edge in edges(lattice)
         @series begin
             edge[:, 1], edge[:, 2], edge[:, 3]
         end
