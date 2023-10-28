@@ -1,7 +1,7 @@
 module CrystallographyRecipes
 
-using CrystallographyBase: AbstractLattice
-using Crystallography:
+using CrystallographyBase:
+    AbstractLattice,
     AbstractCell,
     Lattice,
     ShiftedLattice,
