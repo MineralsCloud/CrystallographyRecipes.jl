@@ -1,0 +1,3 @@
+[deps]
+CrystallographyRecipes = "6d201c90-cd51-4bcb-ba42-504028e2f5e7"
+JuliaFormatter = "98e50ef6-434e-11e9-1051-2b60c6c9e899"
