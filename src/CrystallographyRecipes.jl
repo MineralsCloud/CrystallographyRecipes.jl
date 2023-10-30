@@ -6,6 +6,8 @@ using CrystallographyBase:
     Lattice,
     ShiftedLattice,
     DispersionRelation,
+    latticeconstants,
+    cellvolume,
     edges,
     atomtypes,
     eachatom,
@@ -80,6 +82,45 @@ end
         XYZ = reduce(hcat, coordinates)
         @series begin
             XYZ[1, :], XYZ[2, :], XYZ[3, :]
+        end
+    end
+end
+
+const _LATTICE_CONSTANTS_LABELS = ("a", "b", "c", "α", "β", "γ")
+@userplot LatticeConstantsPlot
+@recipe function f(plot::LatticeConstantsPlot; latticeindices=[1, 2, 3])
+    @assert eltype(latticeindices) <: Integer &&
+        !isempty(latticeindices) &&
+        latticeindices ⊆ 1:6
+    has_axes_angles = any(<=(3), latticeindices) && any(>(3), latticeindices)
+    if has_axes_angles
+        layout --> (1, 2)
+    end
+    lattices = last(plot.args)
+    if lattices isa Lattice
+        lattices = Base.vect(lattices)
+    end
+    indices = if length(plot.args) == 2
+        first(plot.args)
+    else
+        xguide --> "volume"
+        cellvolume.(lattices)
+    end
+    constants = collect(latticeconstants(lattice) for lattice in lattices)
+    for latticeindex in latticeindices
+        axes_or_angles = [data[latticeindex] for data in constants]
+        seriestype --> :scatter
+        if latticeindex > 3  # Angles
+            yformatter --> :plain  # Do not use the scientific notation for angles!
+            yguide --> "angle"
+            subplot := has_axes_angles ? 2 : 1
+        else  # Axes
+            yguide --> "axis length"
+            subplot := 1
+        end
+        @series begin
+            label --> _LATTICE_CONSTANTS_LABELS[latticeindex]
+            indices, axes_or_angles
         end
     end
 end
