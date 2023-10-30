@@ -92,7 +92,10 @@ const _LATTICE_CONSTANTS_LABELS = ("a", "b", "c", "α", "β", "γ")
     @assert eltype(latticeindices) <: Integer &&
         !isempty(latticeindices) &&
         latticeindices ⊆ 1:6
-    axisindices, angleindices = filter(<=(3), latticeindices), filter(>(3), latticeindices)
+    has_axes_angles = any(<=(3), latticeindices) && any(>(3), latticeindices)
+    if has_axes_angles
+        layout --> (1, 2)
+    end
     lattices = last(plot.args)
     if lattices isa Lattice
         lattices = Base.vect(lattices)
@@ -104,41 +107,20 @@ const _LATTICE_CONSTANTS_LABELS = ("a", "b", "c", "α", "β", "γ")
         cellvolume.(lattices)
     end
     constants = collect(latticeconstants(lattice) for lattice in lattices)
-    if !isempty(axisindices) && !isempty(angleindices)
-        layout --> (2, 1)
-        for axisindex in axisindices
-            axes = collect(data[axisindex] for data in constants)
-            @series begin
-                seriestype --> :scatter
-                linewidth --> 1
-                label --> _LATTICE_CONSTANTS_LABELS[axisindex]
-                yguide --> "axis length"
-                subplot := 1
-                indices, axes
-            end
+    for latticeindex in latticeindices
+        axes_or_angles = [data[latticeindex] for data in constants]
+        seriestype --> :scatter
+        if latticeindex > 3  # Angles
+            yformatter --> :plain  # Do not use the scientific notation for angles!
+            yguide --> "angle"
+            subplot := has_axes_angles ? 2 : 1
+        else  # Axes
+            yguide --> "axis length"
+            subplot := 1
         end
-        for angleindex in angleindices
-            angles = collect(data[angleindex] for data in constants)
-            @series begin
-                seriestype --> :scatter
-                linewidth --> 1
-                label --> _LATTICE_CONSTANTS_LABELS[angleindex]
-                yformatter --> :plain  # Do not use the scientific notation for angles!
-                yguide --> "angle"
-                subplot := 2
-                indices, angles
-            end
-        end
-    else
-        for latticeindex in latticeindices
-            axes_or_angles = [data[latticeindex] for data in constants]
-            @series begin
-                seriestype --> :scatter
-                linewidth --> 1
-                label --> _LATTICE_CONSTANTS_LABELS[latticeindex]
-                yguide --> maximum(latticeindices) <= 3 ? "axis length" : "angle"
-                indices, axes_or_angles
-            end
+        @series begin
+            label --> _LATTICE_CONSTANTS_LABELS[latticeindex]
+            indices, axes_or_angles
         end
     end
 end
