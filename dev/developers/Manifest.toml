@@ -53,9 +53,9 @@ version = "4.1.1"
 
 [[deps.CrystallographyBase]]
 deps = ["AnonymousEnums", "CrystallographyCore", "LinearAlgebra", "Reexport", "StaticArrays", "StructEquality"]
-git-tree-sha1 = "bdef31872b0957a58e6837ce83d7ee6955643ef6"
+git-tree-sha1 = "2a9fffe4389d550840ebf4521f091f0b6c0f2e30"
 uuid = "93b1d1cd-a8ea-4aa5-adb1-b2407ea0ba8d"
-version = "0.14.2"
+version = "0.14.3"
 
     [deps.CrystallographyBase.extensions]
     BrillouinSpglibExt = ["Brillouin", "Spglib"]
@@ -86,7 +86,7 @@ version = "0.6.0"
 
 [[deps.CrystallographyRecipes]]
 deps = ["CrystallographyBase", "RecipesBase"]
-git-tree-sha1 = "2030dc83962ff5886cee98404b3f80abb6ef7fa5"
+git-tree-sha1 = "f4eab3ae36ee7994cf2eddc4d194052a5b10b7ee"
 repo-rev = "main"
 repo-url = "https://github.com/MineralsCloud/CrystallographyRecipes.jl"
 uuid = "6d201c90-cd51-4bcb-ba42-504028e2f5e7"
@@ -127,9 +127,9 @@ version = "0.21.4"
 
 [[deps.JuliaFormatter]]
 deps = ["CSTParser", "CommonMark", "DataStructures", "Glob", "Pkg", "PrecompileTools", "Tokenize"]
-git-tree-sha1 = "0bac3374ff3aa798148669ecb5559ba20c8b0e73"
+git-tree-sha1 = "b11c259ae111b08aabdc2ff5186dad12a95fedca"
 uuid = "98e50ef6-434e-11e9-1051-2b60c6c9e899"
-version = "1.0.40"
+version = "1.0.41"
 
 [[deps.LibCURL]]
 deps = ["LibCURL_jll", "MozillaCACerts_jll"]
