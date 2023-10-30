@@ -88,37 +88,41 @@ end
 
 const _LATTICE_CONSTANTS_LABELS = ("a", "b", "c", "α", "β", "γ")
 @userplot LatticeConstantsPlot
-@recipe function f(plot::LatticeConstantsPlot; selectors=[1, 2, 3])
-    @assert eltype(selectors) <: Integer &&
-        1 <= length(selectors) <= 6 &&
-        all(1 .<= extrema(selectors) .<= 6)
-    selectedaxes, selectedangles = filter(<=(3), selectors), filter(>(3), selectors)
+@recipe function f(plot::LatticeConstantsPlot; latticeindices=[1, 2, 3])
+    @assert eltype(latticeindices) <: Integer &&
+        !isempty(latticeindices) &&
+        latticeindices ⊆ 1:6
+    axisindices, angleindices = filter(<=(3), latticeindices), filter(>(3), latticeindices)
     lattices = last(plot.args)
     if lattices isa Lattice
         lattices = Base.vect(lattices)
     end
-    indices = length(plot.args) == 2 ? first(plot.args) : cellvolume.(lattices)
-    constants = [latticeconstants(lattice) for lattice in lattices]
-    xguide --> "volume"
-    if !isempty(selectedaxes) && !isempty(selectedangles)
+    indices = if length(plot.args) == 2
+        first(plot.args)
+    else
+        xguide --> "volume"
+        cellvolume.(lattices)
+    end
+    constants = collect(latticeconstants(lattice) for lattice in lattices)
+    if !isempty(axisindices) && !isempty(angleindices)
         layout --> (2, 1)
-        for selectedaxis in selectedaxes
-            axes = [data[selectedaxis] for data in constants]
+        for axisindex in axisindices
+            axes = collect(data[axisindex] for data in constants)
             @series begin
                 seriestype --> :scatter
                 linewidth --> 1
-                label --> _LATTICE_CONSTANTS_LABELS[selectedaxis]
+                label --> _LATTICE_CONSTANTS_LABELS[axisindex]
                 yguide --> "axis length"
                 subplot := 1
                 indices, axes
             end
         end
-        for selectedangle in selectedangles
-            angles = [data[selectedangle] for data in constants]
+        for angleindex in angleindices
+            angles = collect(data[angleindex] for data in constants)
             @series begin
                 seriestype --> :scatter
                 linewidth --> 1
-                label --> _LATTICE_CONSTANTS_LABELS[selectedangle]
+                label --> _LATTICE_CONSTANTS_LABELS[angleindex]
                 yformatter --> :plain  # Do not use the scientific notation for angles!
                 yguide --> "angle"
                 subplot := 2
@@ -126,13 +130,13 @@ const _LATTICE_CONSTANTS_LABELS = ("a", "b", "c", "α", "β", "γ")
             end
         end
     else
-        for selector in selectors
-            axes_or_angles = [data[selector] for data in constants]
+        for latticeindex in latticeindices
+            axes_or_angles = [data[latticeindex] for data in constants]
             @series begin
                 seriestype --> :scatter
                 linewidth --> 1
-                label --> _LATTICE_CONSTANTS_LABELS[selector]
-                yguide --> maximum(selectors) <= 3 ? "axis length" : "angle"
+                label --> _LATTICE_CONSTANTS_LABELS[latticeindex]
+                yguide --> maximum(latticeindices) <= 3 ? "axis length" : "angle"
                 indices, axes_or_angles
             end
         end
