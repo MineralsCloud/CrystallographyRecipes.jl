@@ -6,6 +6,8 @@ using CrystallographyBase:
     Lattice,
     ShiftedLattice,
     DispersionRelation,
+    latticeconstants,
+    cellvolume,
     edges,
     atomtypes,
     eachatom,
@@ -80,6 +82,59 @@ end
         XYZ = reduce(hcat, coordinates)
         @series begin
             XYZ[1, :], XYZ[2, :], XYZ[3, :]
+        end
+    end
+end
+
+const _LATTICE_CONSTANTS_LABELS = ("a", "b", "c", "α", "β", "γ")
+@userplot LatticeConstantsPlot
+@recipe function f(plot::LatticeConstantsPlot; selectors=[1, 2, 3])
+    @assert eltype(selectors) <: Integer &&
+        1 <= length(selectors) <= 6 &&
+        all(1 .<= extrema(selectors) .<= 6)
+    selectedaxes, selectedangles = filter(<=(3), selectors), filter(>(3), selectors)
+    lattices = last(plot.args)
+    if lattices isa Lattice
+        lattices = Base.vect(lattices)
+    end
+    indices = length(plot.args) == 2 ? first(plot.args) : cellvolume.(lattices)
+    constants = [latticeconstants(lattice) for lattice in lattices]
+    xguide --> "volume"
+    if !isempty(selectedaxes) && !isempty(selectedangles)
+        layout --> (2, 1)
+        for selectedaxis in selectedaxes
+            axes = [data[selectedaxis] for data in constants]
+            @series begin
+                seriestype --> :scatter
+                linewidth --> 1
+                label --> _LATTICE_CONSTANTS_LABELS[selectedaxis]
+                yguide --> "axis length"
+                subplot := 1
+                indices, axes
+            end
+        end
+        for selectedangle in selectedangles
+            angles = [data[selectedangle] for data in constants]
+            @series begin
+                seriestype --> :scatter
+                linewidth --> 1
+                label --> _LATTICE_CONSTANTS_LABELS[selectedangle]
+                yformatter --> :plain  # Do not use the scientific notation for angles!
+                yguide --> "angle"
+                subplot := 2
+                indices, angles
+            end
+        end
+    else
+        for selector in selectors
+            axes_or_angles = [data[selector] for data in constants]
+            @series begin
+                seriestype --> :scatter
+                linewidth --> 1
+                label --> _LATTICE_CONSTANTS_LABELS[selector]
+                yguide --> maximum(selectors) <= 3 ? "axis length" : "angle"
+                indices, axes_or_angles
+            end
         end
     end
 end
