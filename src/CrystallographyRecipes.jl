@@ -103,7 +103,7 @@ const _LATTICE_CONSTANTS_LABELS = ("a", "b", "c", "α", "β", "γ")
     end
     constants = collect(latticeconstants(lattice) for lattice in lattices)
     for index in indices
-        axes = [data[index] for data in constants]
+        axes = collect(data[index] for data in constants)
         seriestype --> :scatter
         yguide --> "axis length"
         @series begin
@@ -128,7 +128,7 @@ end
     end
     constants = collect(latticeconstants(lattice) for lattice in lattices)
     for index in indices
-        angles = [data[index] for data in constants]
+        angles = collect(data[index] for data in constants)
         seriestype --> :scatter
         yformatter --> :plain  # Do not use the scientific notation for angles!
         yguide --> "angle"
