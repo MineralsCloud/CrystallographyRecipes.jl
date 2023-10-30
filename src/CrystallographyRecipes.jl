@@ -87,40 +87,54 @@ end
 end
 
 const _LATTICE_CONSTANTS_LABELS = ("a", "b", "c", "α", "β", "γ")
-@userplot LatticeConstantsPlot
-@recipe function f(plot::LatticeConstantsPlot; latticeindices=[1, 2, 3])
-    @assert eltype(latticeindices) <: Integer &&
-        !isempty(latticeindices) &&
-        latticeindices ⊆ 1:6
-    has_axes_angles = any(<=(3), latticeindices) && any(>(3), latticeindices)
-    if has_axes_angles
-        layout --> (1, 2)
-    end
+
+@userplot AxisLengthsPlot
+@recipe function f(plot::AxisLengthsPlot; indices=[1, 2, 3])
+    @assert eltype(indices) <: Integer && !isempty(indices) && indices ⊆ 1:6
     lattices = last(plot.args)
     if lattices isa Lattice
         lattices = Base.vect(lattices)
     end
-    indices = if length(plot.args) == 2
+    xindices = if length(plot.args) == 2
         first(plot.args)
     else
         xguide --> "volume"
         cellvolume.(lattices)
     end
     constants = collect(latticeconstants(lattice) for lattice in lattices)
-    for latticeindex in latticeindices
-        axes_or_angles = [data[latticeindex] for data in constants]
+    for index in indices
+        axes = [data[index] for data in constants]
         seriestype --> :scatter
-        if latticeindex > 3  # Angles
-            yformatter --> :plain  # Do not use the scientific notation for angles!
-            yguide --> "angle"
-            subplot := has_axes_angles ? 2 : 1
-        else  # Axes
-            yguide --> "axis length"
-            subplot := 1
-        end
+        yguide --> "axis length"
         @series begin
-            label --> _LATTICE_CONSTANTS_LABELS[latticeindex]
-            indices, axes_or_angles
+            label --> _LATTICE_CONSTANTS_LABELS[index]
+            xindices, axes
+        end
+    end
+end
+
+@userplot AnglesPlot
+@recipe function f(plot::AnglesPlot; indices=[4, 5, 6])
+    @assert eltype(indices) <: Integer && !isempty(indices) && indices ⊆ 4:6
+    lattices = last(plot.args)
+    if lattices isa Lattice
+        lattices = Base.vect(lattices)
+    end
+    xindices = if length(plot.args) == 2
+        first(plot.args)
+    else
+        xguide --> "volume"
+        cellvolume.(lattices)
+    end
+    constants = collect(latticeconstants(lattice) for lattice in lattices)
+    for index in indices
+        angles = [data[index] for data in constants]
+        seriestype --> :scatter
+        yformatter --> :plain  # Do not use the scientific notation for angles!
+        yguide --> "angle"
+        @series begin
+            label --> _LATTICE_CONSTANTS_LABELS[index]
+            xindices, angles
         end
     end
 end
