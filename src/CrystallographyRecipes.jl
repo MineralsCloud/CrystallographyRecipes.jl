@@ -153,10 +153,13 @@ end
     xticks --> (xticks, xticklabels)
     xlims --> extrema(xticks)
     xguide --> "k"
+    framestyle --> :box
+    grid --> false
     for band in eachcol(bands)
         @series begin
-            seriestype --> :path
-            linewidth --> 1
+            seriestype --> :scatter
+            markerstrokewidth --> 0
+            markersize --> 1
             label --> ""
             eachindex(band) ./ length(band), band
         end
