@@ -140,7 +140,7 @@ end
 end
 
 @userplot BandsPlot
-@recipe function f(plot::BandsPlot; specialpoints=[[]])
+@recipe function f(plot::BandsPlot; specialpoints=[[]], split=false)
     if !(eltype(specialpoints) <: AbstractVector)
         throw(ArgumentError("`specialpoints` must be a vector of vectors!"))
     end
@@ -164,22 +164,24 @@ end
             eachindex(band) ./ length(band), band
         end
     end
-    split = cumsum(length.(specialpoints))[begin:(end - 1)]  # Do not include the last point
-    for (i, xtick) in enumerate(xticks)
-        seriestype --> :vline
-        seriescolor := :black  # Fix the axis color
-        linewidth := 1  # This is an axis, don't change its width
-        z_order --> :back
-        label := ""
-        if i in split
-            @series begin
-                linestyle --> :solid
-                [xtick]
-            end
-        else
-            @series begin
-                linestyle --> :dot
-                [xtick]
+    if split
+        brokenat = cumsum(length.(specialpoints))[begin:(end - 1)]  # Do not include the last point
+        for (i, xtick) in enumerate(xticks)
+            seriestype --> :vline
+            seriescolor := :black  # Fix the axis color
+            linewidth := 1  # This is an axis, don't change its width
+            z_order --> :back
+            label := ""
+            if i in brokenat
+                @series begin
+                    linestyle --> :solid
+                    [xtick]
+                end
+            else
+                @series begin
+                    linestyle --> :dot
+                    [xtick]
+                end
             end
         end
     end
